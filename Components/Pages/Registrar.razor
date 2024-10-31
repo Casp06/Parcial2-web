@@ -1,0 +1,63 @@
+﻿@page "/registrar"
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore;
+@inject VisitaContext DbContext;
+<PageTitle>Registrar</PageTitle>
+
+<h1>Registrar visitas</h1>
+
+<EditForm Model="@nuevaVisita" OnValidSubmit="@RegistrarVisita" class="mb-2 row" FormName="Visita">
+    <div class="form-group mb-2 col-6">
+        <label for="nombre">Nombre</label>
+        <InputText class="form-control" type="text" @bind-Value="nuevaVisita.Nombre"/>
+    </div>
+    <div class="form-group mb-2 col-6">
+        <label for="Apellido">Apellido</label>
+        <InputText class="form-control" type="text" @bind-Value="nuevaVisita.Apellido"/>
+    </div>
+    <div class="form-group mb-2 col-6">
+        <label for="Telefono">Telefono</label>
+        <InputText class="form-control" type="text" @bind-Value="nuevaVisita.Telefono"/>
+    </div>
+    <div class="form-group mb-2 col-6">
+        <label for="Correo">Correo</label>
+        <InputText class="form-control" type="email" @bind-Value="nuevaVisita.Correo"/>
+    </div>
+
+    <button class="btn btn-primary col-1" type="submit">Guardar</button>
+</EditForm>
+
+
+<h4>Lista de visitas</h4>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Nombre y Apellido</th>
+      <th scope="col">Telefono</th>
+      <th scope="col">Correo</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach(var i in Visitas){
+        <tr>
+            <td>@i.Nombre @i.Apellido</td>
+            <td>@i.Telefono</td>
+            <td>@i.Correo</td>
+        </tr>
+    }
+  </tbody>
+</table>
+
+@code {
+    private Visita nuevaVisita = new Visita();
+    private List<Visita> Visitas = new List<Visita>();
+    protected override async Task OnInitializedAsync(){
+        Visitas = await DbContext.Visitas.ToListAsync();
+    }
+    private async Task RegistrarVisita(){
+        DbContext.Visitas.Add(nuevaVisita);
+        await DbContext.SaveChangesAsync();
+        Visitas = await DbContext.Visitas.ToListAsync();
+        nuevaVisita = new Visita();
+    }
+}
